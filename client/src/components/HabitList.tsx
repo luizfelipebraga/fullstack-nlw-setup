@@ -2,6 +2,7 @@ import * as Checkbox from '@radix-ui/react-checkbox';
 import dayjs from 'dayjs';
 import { Check } from 'phosphor-react';
 import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 
 import { api } from '../lib/axios';
 
@@ -22,17 +23,24 @@ interface HabitsInfo {
 export function HabitsList({ date, onCompletedChanged }: HabitLisProps) {
   const [habitsInfo, setHabitsInfo] = useState<HabitsInfo>();
 
+  const getDay = async () => {
+    const response = await api.get('day', {
+      params: {
+        date: date.toISOString(),
+      },
+    });
+    return response.data;
+  };
+
+  const getDayResponse = useQuery<HabitsInfo>('getDay', getDay, {
+    suspense: true,
+  });
+
   useEffect(() => {
-    api
-      .get('day', {
-        params: {
-          date: date.toISOString(),
-        },
-      })
-      .then((response) => {
-        setHabitsInfo(response.data);
-      });
-  }, []);
+    if (getDayResponse.status === 'success' && !getDayResponse.isLoading) {
+      setHabitsInfo(getDayResponse.data);
+    }
+  }, [getDayResponse.data]);
 
   async function handleToggleHabit(habitId: string) {
     const isHabitAlreadyCompleted =

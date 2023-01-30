@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
 
 import { api } from '../lib/axios';
 import { generateDatesFromYearBeginning } from '../utils/generate-dates-from-year-beginning';
@@ -19,14 +20,21 @@ type Summary = {
   completed: number;
 }[];
 
-export function SummaryTable() {
-  const [summary, setSummary] = useState<Summary>([]);
+const getSummary = async () => {
+  const response = await api.get<Summary>('summary');
+  return response.data;
+};
 
-  useEffect(() => {
-    api.get('summary').then((response) => {
-      setSummary(response.data);
-    });
-  }, []);
+export function SummaryTable() {
+  const { data, isLoading, error } = useQuery<Summary>('data', getSummary);
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (error) {
+    return <span>Error to fetching data...</span>;
+  }
 
   return (
     <div className="w-full flex">
@@ -44,9 +52,9 @@ export function SummaryTable() {
       </div>
 
       <div className="grid grid-rows-7 grid-flow-col gap-3">
-        {summary.length &&
+        {data?.length &&
           summaryDates.map((date) => {
-            const dayInSummary = summary.find((day) => {
+            const dayInSummary = data.find((day) => {
               return dayjs(date).isSame(day.date, 'day');
             });
 
