@@ -1,5 +1,6 @@
 import './styles/global.css';
 
+import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
   QueryClient,
@@ -9,7 +10,6 @@ import {
 
 import { Header } from './components/Header';
 import { SummaryTable } from './components/SummaryTable';
-import { Suspense } from 'react';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -34,7 +34,7 @@ export function App() {
             )}
           >
             <Suspense fallback={<div>Loading...</div>}>
-              <div className="h-screen flex justify-center items-center">
+              <div className="h-screen w-screen flex justify-center items-center">
                 <div className="w-full max-w-5xl px-6 flex flex-col gap-16">
                   <Header />
                   <SummaryTable />
