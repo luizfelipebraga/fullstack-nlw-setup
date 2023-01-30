@@ -32,9 +32,7 @@ export function HabitsList({ date, onCompletedChanged }: HabitLisProps) {
     return response.data;
   };
 
-  const getDayResponse = useQuery<HabitsInfo>('getDay', getDay, {
-    suspense: true,
-  });
+  const getDayResponse = useQuery<HabitsInfo>('getDay', getDay);
 
   useEffect(() => {
     if (getDayResponse.status === 'success' && !getDayResponse.isLoading) {
